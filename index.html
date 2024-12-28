@@ -1,39 +1,42 @@
 <html>
-    <head>
-        <link rel="stylesheet" href="./css/main.css">
-        <script type="application/javascript" src="./js/qrcode.min.js"></script>
-        <script type="module" src="./js/main.js"></script>
-        <title>Store Pass</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
-    </head>
-    <body>
-        <div class="main">
-            <div class="field">
-                <label for="mainPass">Main password:</label>
-                <div class="content">
-                    <input type="text" id="mainPass">
-                </div>
-            </div>
-            <div class="field">
-                <label for="pass">Password:</label>
-                <div class="content">
-                    <input type="text" id="pass">
-                </div>
-            </div>
-            <div class="field">
-                <label for="Encrypted">Encrypted:</label>
-                <div class="content">
-                    <textarea id="encrypted"></textarea>
-                </div>
-            </div>
-            <div id="qrContainer" class="hidden">
-                <div id="qr"></div>
-            </div>
-            <div class="buttons">
-                <button id="toggleQR">QR Code</button>
-                <button id="encrypt">Encrypt</button>
-                <button id="decrypt">Decrypt</button>
-            </div>
-        </div>
-    </body>
+	<head>
+		<link rel="stylesheet" href="./css/main.css" />
+		<script type="application/javascript" src="./js/qrcode.min.js"></script>
+		<script type="module" src="./js/main.js"></script>
+		<title>Store Pass</title>
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+		/>
+	</head>
+	<body>
+		<div class="main">
+			<div class="field">
+				<label for="mainPass">Main password:</label>
+				<div class="content">
+					<input type="text" id="mainPass" />
+				</div>
+			</div>
+			<div class="field">
+				<label for="pass">Password:</label>
+				<div class="content">
+					<input type="text" id="pass" />
+				</div>
+			</div>
+			<div class="field">
+				<label for="Encrypted">Encrypted:</label>
+				<div class="content">
+					<textarea id="encrypted"></textarea>
+				</div>
+			</div>
+			<div id="qrContainer" class="hidden">
+				<div id="qr"></div>
+			</div>
+			<div class="buttons">
+				<button id="toggleQR">QR Code</button>
+				<button id="encrypt">Encrypt</button>
+				<button id="decrypt">Decrypt</button>
+			</div>
+		</div>
+	</body>
 </html>
