@@ -121,9 +121,6 @@ const init = async () => {
     inputs.pass = document.querySelector('#pass')
     inputs.encrypted = document.querySelector('#encrypted')
 
-    inputs.mainPass.value = 'batman123';
-    inputs.pass.value = 'trustno1';
-
     bindButton('encrypt', encrypt);
     bindButton('decrypt', decrypt);
     bindButton('toggleQR', toggleQRCode);
