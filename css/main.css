@@ -65,3 +65,6 @@ textarea {
 .hidden {
 	display: none !important;
 }
+#linkContainer a {
+	color: #9890ca;
+}

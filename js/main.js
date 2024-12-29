@@ -57,6 +57,8 @@ const encrypt = async () => {
 	const content = xorHexStr(hash, hexText)
 	const checksum = (await strToSha256Hex(salt + content)).slice(0, 2)
 	inputs.encrypted.value = `${salt}/${content}-${checksum}`
+	updateQR()
+	updateLink()
 }
 
 const decrypt = async () => {
@@ -67,27 +69,25 @@ const decrypt = async () => {
 	inputs.pass.value = text
 }
 
-const toggleClass = (dom, className) => {
+const updateClassSet = (dom, fn) => {
 	const curr = dom.getAttribute('class')
 	const set = new Set(curr ? curr.split(/\s+/) : [])
-	if (set.has(className)) {
-		set.delete(className)
-	} else {
-		set.add(className)
-	}
+	fn(set)
 	dom.setAttribute('class', [...set].join(' '))
-	return set.has(className)
 }
 
-const toggleQRCode = () => {
-	const container = document.querySelector('#qrContainer')
+const removeClass = (dom, className) =>
+	updateClassSet(dom, (set) => set.delete(className))
+
+const addClass = (dom, className) =>
+	updateClassSet(dom, (set) => set.add(className))
+
+const updateQR = () => {
+	removeClass(document.querySelector('#qrContainer'), 'hidden')
 	const dom = document.querySelector('#qr')
-	if (toggleClass(container, 'hidden')) {
-		dom.innerHTML = ''
-		return
-	}
 	const arg = inputs.encrypted.value
 	const url = `https://giovanirubim.github.io/storepass?decrypt=${arg}`
+	dom.innerHTML = ''
 	new QRCode(dom, {
 		text: url,
 		width: 180,
@@ -96,6 +96,15 @@ const toggleQRCode = () => {
 		colorLight: '#fff',
 		correctLevel: QRCode.CorrectLevel.L,
 	})
+}
+
+const updateLink = () => {
+	removeClass(document.querySelector('#linkContainer'), 'hidden')
+	const dom = document.querySelector('#linkContainer a')
+	const arg = inputs.encrypted.value
+	const url = `https://giovanirubim.github.io/storepass?decrypt=${arg}`
+	dom.href = url
+	dom.innerHTML = url
 }
 
 const bindButton = (id, handler) => {
@@ -117,7 +126,6 @@ const init = async () => {
 
 	bindButton('encrypt', encrypt)
 	bindButton('decrypt', decrypt)
-	bindButton('toggleQR', toggleQRCode)
 
 	loadFromQuery()
 }
