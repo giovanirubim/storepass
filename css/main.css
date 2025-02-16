@@ -28,10 +28,27 @@ textarea {
 	border: 1px solid #333;
 	border-radius: 3px;
 	color: #ccc;
-	width: 100%;
 	&:focus {
 		color: #fff;
 	}
+}
+.field .content {
+	display: flex;
+	gap: 10px;
+	input,
+	textarea {
+		flex: 1;
+	}
+	button {
+		padding: 0px;
+		border: none;
+		background-color: transparent;
+		cursor: pointer;
+	}
+}
+.pass button img {
+	width: 18px;
+	height: 18px;
 }
 textarea {
 	resize: none;
@@ -41,6 +58,7 @@ textarea {
 	display: flex;
 	justify-content: flex-end;
 	gap: 10px;
+	select,
 	button {
 		height: 26px;
 		background-color: #234;
@@ -51,20 +69,30 @@ textarea {
 		cursor: pointer;
 	}
 }
-#qrContainer {
-	display: flex;
-	justify-content: center;
-	background-color: #444;
-	border-radius: 3px;
-	border: 1px solid #666;
-}
-#qr {
-	padding: 10px;
-	background-color: #fff;
-}
 .hidden {
 	display: none !important;
 }
-#linkContainer a {
+a {
 	color: #9890ca;
+}
+.err-msg {
+	background-color: #413636;
+	color: rgb(216, 111, 111);
+	padding: 2px 5px;
+	border-radius: 2px;
+	margin-top: 5px;
+}
+#qr {
+	padding: 10px;
+	background-color: #111;
+	border-radius: 5px;
+	flex-grow: 1;
+	display: flex;
+	justify-content: center;
+	border: 1px solid #444;
+	img {
+		padding: 10px;
+		background-color: #fff;
+		border-radius: 5px;
+	}
 }

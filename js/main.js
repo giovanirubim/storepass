@@ -1,93 +1,11 @@
-const inputs = {
-	mainPass: null,
-	pass: null,
-	encrypted: null,
+import { decrypt, encrypt } from './encryption.js'
+
+function buildURL(encrypted) {
+	const search = '?decrypt=' + encodeURIComponent(encrypted)
+	return window.location.href.replace(/\?.*/, '') + search
 }
 
-const strToBuff = (text) => {
-	return new TextEncoder().encode(text)
-}
-
-const buffToHex = (buff) => {
-	return [...new Uint8Array(buff)]
-		.map((byte) => byte.toString(16).padStart(2, '0'))
-		.join('')
-}
-
-const strToHex = (str) => {
-	return buffToHex(strToBuff(str))
-}
-
-const hextToStr = (hex) => {
-	return new TextDecoder().decode(
-		new Uint8Array(hex.match(/../g).map((x) => parseInt(x, 16))).buffer
-	)
-}
-
-const strToSha256Hex = async (str) => {
-	const hashBuff = await crypto.subtle.digest('SHA-256', strToBuff(str))
-	return buffToHex(hashBuff)
-}
-
-const encryptionHash = async (salt, pass, len) => {
-	let res = ''
-	let suffix = ''
-	while (res.length < len) {
-		res += await strToSha256Hex(salt + pass + suffix)
-		suffix = ':' + (Number(suffix.replace(':', '') || '0') + 1)
-	}
-	return res.slice(0, len)
-}
-
-const xorHexStr = (a, b) => {
-	if (!a || !b) return ''
-	return (
-		(`0x${a[0]}` ^ `0x${b[0]}`).toString(16) +
-		xorHexStr(a.slice(1), b.slice(1))
-	)
-}
-
-const encrypt = async () => {
-	const pass = inputs.mainPass.value
-	const salt = 'x'
-		.repeat(6)
-		.replace(/x/g, () => ((Math.random() * 16) | 0).toString(16))
-	const hexText = strToHex(inputs.pass.value)
-	const hash = await encryptionHash(salt, pass, hexText.length)
-	const content = xorHexStr(hash, hexText)
-	const checksum = (await strToSha256Hex(salt + content)).slice(0, 2)
-	inputs.encrypted.value = `${salt}/${content}-${checksum}`
-	updateQR()
-	updateLink()
-}
-
-const decrypt = async () => {
-	const pass = inputs.mainPass.value
-	const [salt, content, checksum] = inputs.encrypted.value.split(/[\/\-]/)
-	const hash = await encryptionHash(salt, pass, content.length)
-	const text = hextToStr(xorHexStr(hash, content))
-	inputs.pass.value = text
-}
-
-const updateClassSet = (dom, fn) => {
-	const curr = dom.getAttribute('class')
-	const set = new Set(curr ? curr.split(/\s+/) : [])
-	fn(set)
-	dom.setAttribute('class', [...set].join(' '))
-}
-
-const removeClass = (dom, className) =>
-	updateClassSet(dom, (set) => set.delete(className))
-
-const addClass = (dom, className) =>
-	updateClassSet(dom, (set) => set.add(className))
-
-const updateQR = () => {
-	removeClass(document.querySelector('#qrContainer'), 'hidden')
-	const dom = document.querySelector('#qr')
-	const arg = inputs.encrypted.value
-	const url = `https://giovanirubim.github.io/storepass?decrypt=${arg}`
-	dom.innerHTML = ''
+function appendQR(dom, url) {
 	new QRCode(dom, {
 		text: url,
 		width: 180,
@@ -98,36 +16,94 @@ const updateQR = () => {
 	})
 }
 
-const updateLink = () => {
-	removeClass(document.querySelector('#linkContainer'), 'hidden')
-	const dom = document.querySelector('#linkContainer a')
-	const arg = inputs.encrypted.value
-	const url = `https://giovanirubim.github.io/storepass?decrypt=${arg}`
-	dom.href = url
-	dom.innerHTML = url
-}
-
-const bindButton = (id, handler) => {
-	document.querySelector(`#${id}`).addEventListener('click', handler)
-}
-
-const loadFromQuery = () => {
+function loadFromQuery() {
 	const { search } = window.location
 	const args = new URLSearchParams(search)
 	const value = args.get('decrypt')
 	if (!value) return
-	inputs.encrypted.value = value
+	$('#encrypted').val(value)
 }
 
-const init = async () => {
-	inputs.mainPass = document.querySelector('#mainPass')
-	inputs.pass = document.querySelector('#pass')
-	inputs.encrypted = document.querySelector('#encrypted')
-
-	bindButton('encrypt', encrypt)
-	bindButton('decrypt', decrypt)
-
-	loadFromQuery()
+function setError(input, message) {
+	const parent = input.closest('.field')
+	const err = parent.find('.err-msg')
+	if (err.length) {
+		err.text(message)
+	} else {
+		parent.append(`<div class="err-msg"></div>`)
+		parent.find('.err-msg').text(message)
+	}
 }
 
-window.addEventListener('load', init)
+function clearError(input) {
+	input.closest('.field').find('.err-msg').remove()
+}
+
+$('body').on('click', '.pass button', function () {
+	const button = $(this)
+	const input = button.closest('.field').find('input')
+	input.attr('type', input.attr('type') === 'password' ? 'text' : 'password')
+	button.children('img').each(function () {
+		$(this).toggleClass('hidden')
+	})
+})
+
+$('#encrypt').on('click', async function () {
+	const mainPassInput = $('#mainPass')
+	const mainPass = mainPassInput.val()
+	if (!mainPass) {
+		setError(mainPassInput, 'Enter a main password')
+		return
+	}
+	const passInput = $('#pass')
+	const pass = passInput.val()
+	if (!pass) {
+		setError(passInput, 'Enter a password')
+		return
+	}
+	const option = $('#option').val()
+	const encrypted = await encrypt(mainPass, pass)
+	const qr = $('#qr')
+	const encryptedInput = $('#encrypted')
+	qr.html('').hide()
+	encryptedInput.show()
+	if (option === 'text') {
+		encryptedInput.val(encrypted)
+	} else if (option === 'link') {
+		encryptedInput.val(buildURL(encrypted))
+	} else if (option === 'qr') {
+		qr.show()
+		encryptedInput.hide()
+		appendQR(qr[0], buildURL(encrypted))
+	}
+})
+
+$('#decrypt').on('click', async function () {
+	const mainPassInput = $('#mainPass')
+	const mainPass = mainPassInput.val()
+	if (!mainPass) {
+		setError(mainPassInput, 'Enter a main password')
+		return
+	}
+	const encryptedInput = $('#encrypted')
+	const encrypted = encryptedInput.val()
+	if (!encrypted) {
+		setError(encryptedInput, 'Enter an encrypted password')
+		return
+	}
+	const res = await decrypt({ pass: mainPass, encrypted })
+	if (res === null) {
+		setError(encryptedInput, 'Invalid encrypted password')
+		return
+	}
+	$('#pass').val(res)
+})
+
+$('input[type="text"],input[type="password"],textarea').on(
+	'input',
+	function () {
+		clearError($(this))
+	}
+)
+
+loadFromQuery()
