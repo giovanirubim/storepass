@@ -68,6 +68,10 @@ textarea {
 		padding: 0px 8px;
 		cursor: pointer;
 	}
+	button[disabled] {
+		opacity: 0.5;
+		cursor: default;
+	}
 }
 .hidden {
 	display: none !important;

@@ -63,18 +63,28 @@ $('#encrypt').on('click', async function () {
 	}
 	const option = $('#option').val()
 	const encrypted = await encrypt(mainPass, pass)
-	const qr = $('#qr')
-	const encryptedInput = $('#encrypted')
-	qr.html('').hide()
-	encryptedInput.show()
 	if (option === 'text') {
-		encryptedInput.val(encrypted)
+		$('#encrypted').val(encrypted)
 	} else if (option === 'link') {
-		encryptedInput.val(buildURL(encrypted))
+		$('#encrypted').val(buildURL(encrypted))
 	} else if (option === 'qr') {
-		qr.show()
-		encryptedInput.hide()
+		const qr = $('#qr')
+		qr.html('')
 		appendQR(qr[0], buildURL(encrypted))
+	}
+})
+
+$('#option').on('input', function () {
+	const val = $(this).val()
+	if (val === 'text') {
+		$('#encrypted').val('').show().removeAttr('readonly')
+		$('#qr').hide()
+	} else if (val === 'link') {
+		$('#encrypted').val('').show().attr('readonly', true)
+		$('#qr').hide()
+	} else {
+		$('#encrypted').hide()
+		$('#qr').html('').show()
 	}
 })
 
