@@ -60,7 +60,7 @@ const fixTypos = (str) => {
 	return typosFixed
 }
 
-export const encrypt = async (pass, text) => {
+export const encrypt = async ({ pass, text }) => {
 	const salt = 'x'
 		.repeat(6)
 		.replace(/x/g, () => ((Math.random() * 16) | 0).toString(16))

@@ -1,102 +1,41 @@
+@import url('./colors-dark.css');
+
 body {
-	background-color: #1c1c1c;
-	color: #ccc;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
-body,
-input,
-textarea {
-	font-size: 12px;
+	background-color: var(--color-bg-1);
 	font-family: monospace;
+	color: var(--color-text-1);
 }
-.main {
+
+:root {
+	--gap: 10px;
+}
+
+.screen {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	display: flex;
+	padding: var(--gap);
+	gap: var(--gap);
+}
+
+section {
+	height: 100%;
+	background-color: var(--color-bg-2);
+	border-radius: calc(var(--gap) / 2);
+}
+
+section.password-list {
+	flex-shrink: 0;
 	width: 300px;
-	padding: 26px;
-	border: 1px solid #333;
-	border-radius: 10px;
-	background-color: #252525;
-	display: flex;
-	flex-direction: column;
-	gap: 15px;
 }
-input,
-textarea {
-	padding: 5px;
-	background-color: #222;
-	border: 1px solid #333;
-	border-radius: 3px;
-	color: #ccc;
-	&:focus {
-		color: #fff;
-	}
+
+section.password-list div.title {
+	font-size: 24px;
 }
-.field .content {
-	display: flex;
-	gap: 10px;
-	input,
-	textarea {
-		flex: 1;
-	}
-	button {
-		padding: 0px;
-		border: none;
-		background-color: transparent;
-		cursor: pointer;
-	}
-}
-.pass button img {
-	width: 18px;
-	height: 18px;
-}
-textarea {
-	resize: none;
-	height: 92px;
-}
-.buttons {
-	display: flex;
-	justify-content: flex-end;
-	gap: 10px;
-	select,
-	button {
-		height: 26px;
-		background-color: #234;
-		border: 1px solid #345;
-		color: #fff;
-		border-radius: 5px;
-		padding: 0px 8px;
-		cursor: pointer;
-	}
-	button[disabled] {
-		opacity: 0.5;
-		cursor: default;
-	}
-}
-.hidden {
-	display: none !important;
-}
-a {
-	color: #9890ca;
-}
-.err-msg {
-	background-color: #413636;
-	color: rgb(216, 111, 111);
-	padding: 2px 5px;
-	border-radius: 2px;
-	margin-top: 5px;
-}
-#qr {
-	padding: 10px;
-	background-color: #111;
-	border-radius: 5px;
+
+section.workspace {
 	flex-grow: 1;
-	display: flex;
-	justify-content: center;
-	border: 1px solid #444;
-	img {
-		padding: 10px;
-		background-color: #fff;
-		border-radius: 5px;
-	}
 }

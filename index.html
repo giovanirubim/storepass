@@ -1,7 +1,6 @@
 <html>
 	<head>
 		<link rel="stylesheet" href="./css/main.css" />
-		<script type="application/javascript" src="./js/qrcode.min.js"></script>
 		<script
 			type="application/javascript"
 			src="./js/jquery-3.7.1.min.js"
@@ -14,43 +13,11 @@
 		/>
 	</head>
 	<body>
-		<div class="main">
-			<div class="field pass">
-				<label for="mainPass">Main password:</label>
-				<div class="content">
-					<input type="password" id="mainPass" />
-					<button>
-						<img src="./img/eye-open.svg" class="hidden" />
-						<img src="./img/eye-closed.svg" />
-					</button>
-				</div>
-			</div>
-			<div class="field pass">
-				<label for="pass">Password:</label>
-				<div class="content">
-					<input type="password" id="pass" />
-					<button>
-						<img src="./img/eye-open.svg" class="hidden" />
-						<img src="./img/eye-closed.svg" />
-					</button>
-				</div>
-			</div>
-			<div class="field">
-				<label for="Encrypted">Encrypted:</label>
-				<div class="content">
-					<textarea id="encrypted"></textarea>
-					<div id="qr" style="display: none"></div>
-				</div>
-			</div>
-			<div class="buttons">
-				<select id="option">
-					<option value="text">Text</option>
-					<option value="link">Link</option>
-					<option value="qr">QR Code</option>
-				</select>
-				<button id="encrypt">Encrypt</button>
-				<button id="decrypt">Decrypt</button>
-			</div>
+		<div class="screen">
+			<section class="password-list">
+				<div class="title">Senhas</div>
+			</section>
+			<section class="workspace"></section>
 		</div>
 	</body>
 </html>
