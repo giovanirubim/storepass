@@ -138,3 +138,11 @@ $(window).on('keydown', (e) => {
 
 loadFromQuery()
 loadPassword()
+
+if ($('#encrypted').val() && $('#mainPass').val()) {
+	$('#decrypt').click()
+	$('#pass').focus()
+	setTimeout(() => {
+		$('#pass').select()
+	}, 100)
+}
