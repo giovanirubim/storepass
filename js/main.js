@@ -39,6 +39,19 @@ function clearError(input) {
 	input.closest('.field').find('.err-msg').remove()
 }
 
+function storePassword() {
+	const mainPass = $('#mainPass').val()
+	localStorage.setItem('mainPass', mainPass)
+}
+
+function loadPassword() {
+	const mainPass = localStorage.getItem('mainPass')
+	if (!mainPass) return
+	if (mainPass) {
+		$('#mainPass').val(mainPass)
+	}
+}
+
 $('body').on('click', '.pass button', function () {
 	const button = $(this)
 	const input = button.closest('.field').find('input')
@@ -116,4 +129,12 @@ $('input[type="text"],input[type="password"],textarea').on(
 	}
 )
 
+$(window).on('keydown', (e) => {
+	if (e.code === 'KeyS' && e.ctrlKey) {
+		e.preventDefault()
+		confirm('Save password?') && storePassword()
+	}
+})
+
 loadFromQuery()
+loadPassword()
