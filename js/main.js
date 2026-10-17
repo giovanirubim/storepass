@@ -1,4 +1,5 @@
 import { decrypt, encrypt } from './encryption.js'
+import { t, translatePage } from './i18n.js'
 
 function buildURL(encrypted) {
 	const search = '?decrypt=' + encodeURIComponent(encrypted)
@@ -21,7 +22,9 @@ function loadFromQuery() {
 	const args = new URLSearchParams(search)
 	const value = args.get('decrypt')
 	if (!value) return
-	$('#encrypted').val(value)
+	lastEncrypted = value
+	$('#option').val('link')
+	renderOutput()
 }
 
 function setError(input, message) {
@@ -39,20 +42,95 @@ function clearError(input) {
 	input.closest('.field').find('.err-msg').remove()
 }
 
+const MAIN_PASS_KEY = 'mainPass'
+const MAIN_PASS_TTL_DAYS = 30
+
 function storePassword() {
 	const mainPass = $('#mainPass').val()
-	localStorage.setItem('mainPass', mainPass)
+	if (!mainPass) {
+		localStorage.removeItem(MAIN_PASS_KEY)
+		return
+	}
+	const expiresAt = Date.now() + MAIN_PASS_TTL_DAYS * 24 * 60 * 60 * 1000
+	localStorage.setItem(
+		MAIN_PASS_KEY,
+		JSON.stringify({ password: mainPass, expiresAt })
+	)
+}
+
+function readStoredPassword() {
+	const raw = localStorage.getItem(MAIN_PASS_KEY)
+	if (!raw) return null
+	try {
+		const data = JSON.parse(raw)
+		if (typeof data?.password === 'string') return data
+	} catch {}
+	// Saved before expiration existed: a plain string with no expiry
+	return { password: raw, expiresAt: null }
 }
 
 function loadPassword() {
-	const mainPass = localStorage.getItem('mainPass')
-	if (!mainPass) return
-	if (mainPass) {
-		$('#mainPass').val(mainPass)
+	const stored = readStoredPassword()
+	if (!stored) return
+	if (stored.expiresAt === null) {
+		// Migrate the old format, starting its expiration from now
+		$('#mainPass').val(stored.password)
+		storePassword()
+		return
+	}
+	if (stored.expiresAt <= Date.now()) {
+		localStorage.removeItem(MAIN_PASS_KEY)
+		return
+	}
+	$('#mainPass').val(stored.password)
+}
+
+async function copyText(text) {
+	try {
+		await navigator.clipboard.writeText(text)
+	} catch {
+		const tmp = $('<textarea>').val(text).appendTo('body')
+		tmp[0].select()
+		document.execCommand('copy')
+		tmp.remove()
 	}
 }
 
-$('body').on('click', '.pass button', function () {
+$('body').on('click', '.copy', async function () {
+	const button = $(this)
+	const text = $(button.data('target')).val()
+	if (!text) return
+	await copyText(text)
+	flashCheck(button)
+})
+
+// Swaps the button's icon for the check icon for a moment
+function flashCheck(button) {
+	const [icon, checkIcon] = button.children('img')
+	$(icon).addClass('hidden')
+	$(checkIcon).removeClass('hidden')
+	clearTimeout(button.data('timeout'))
+	button.data(
+		'timeout',
+		setTimeout(() => {
+			$(icon).removeClass('hidden')
+			$(checkIcon).addClass('hidden')
+		}, 1000)
+	)
+}
+
+$('#saveMainPass').on('click', function () {
+	if (!$('#mainPass').val()) {
+		storePassword()
+		alert(t('mainPassRemoved'))
+		return
+	}
+	if (!confirm(t('confirmSaveMainPass', MAIN_PASS_TTL_DAYS))) return
+	storePassword()
+	flashCheck($(this))
+})
+
+$('body').on('click', '.pass button.toggle', function () {
 	const button = $(this)
 	const input = button.closest('.field').find('input')
 	input.attr('type', input.attr('type') === 'password' ? 'text' : 'password')
@@ -61,62 +139,72 @@ $('body').on('click', '.pass button', function () {
 	})
 })
 
+// Last encryption result, reused when switching the output type
+let lastEncrypted = null
+
 $('#encrypt').on('click', async function () {
 	const mainPassInput = $('#mainPass')
 	const mainPass = mainPassInput.val()
 	if (!mainPass) {
-		setError(mainPassInput, 'Enter a main password')
+		setError(mainPassInput, t('enterMainPass'))
 		return
 	}
 	const passInput = $('#pass')
 	const pass = passInput.val()
 	if (!pass) {
-		setError(passInput, 'Enter a password')
+		setError(passInput, t('enterPass'))
 		return
 	}
-	const option = $('#option').val()
-	const encrypted = await encrypt(mainPass, pass)
-	if (option === 'text') {
-		$('#encrypted').val(encrypted)
-	} else if (option === 'link') {
-		$('#encrypted').val(buildURL(encrypted))
-	} else if (option === 'qr') {
-		const qr = $('#qr')
-		qr.html('')
-		appendQR(qr[0], buildURL(encrypted))
-	}
+	lastEncrypted = await encrypt(mainPass, pass)
+	renderOutput()
 })
 
-$('#option').on('input', function () {
-	const val = $(this).val()
-	if (val === 'text') {
-		$('#encrypted').val('').show().removeAttr('readonly')
-		$('#qr').hide()
-	} else if (val === 'link') {
-		$('#encrypted').val('').show().attr('readonly', true)
-		$('#qr').hide()
-	} else {
-		$('#encrypted').hide()
-		$('#qr').html('').show()
+function renderOutput() {
+	const option = $('#option').val()
+	const encryptedInput = $('#encrypted')
+	const qr = $('#qr')
+	encryptedInput.siblings('.copy').toggle(option !== 'qr')
+	if (option === 'text') {
+		encryptedInput.val(lastEncrypted ?? '').show().removeAttr('readonly')
+		qr.hide()
+	} else if (option === 'link') {
+		encryptedInput
+			.val(lastEncrypted ? buildURL(lastEncrypted) : '')
+			.show()
+			.attr('readonly', true)
+		qr.hide()
+	} else if (option === 'qr') {
+		encryptedInput.hide()
+		qr.html('').show()
+		if (lastEncrypted) appendQR(qr[0], buildURL(lastEncrypted))
 	}
+}
+
+$('#option').on('input', renderOutput)
+
+// Typing a token by hand replaces the last encryption result
+$('#encrypted').on('input', function () {
+	lastEncrypted = null
 })
 
 $('#decrypt').on('click', async function () {
 	const mainPassInput = $('#mainPass')
 	const mainPass = mainPassInput.val()
 	if (!mainPass) {
-		setError(mainPassInput, 'Enter a main password')
+		setError(mainPassInput, t('enterMainPass'))
 		return
 	}
 	const encryptedInput = $('#encrypted')
-	const encrypted = encryptedInput.val()
+	// Link and QR modes show a URL or an image, so use the code behind them
+	const encrypted =
+		$('#option').val() === 'text' ? encryptedInput.val() : lastEncrypted
 	if (!encrypted) {
-		setError(encryptedInput, 'Enter an encrypted password')
+		setError(encryptedInput, t('enterEncrypted'))
 		return
 	}
 	const res = await decrypt({ pass: mainPass, encrypted })
 	if (res === null) {
-		setError(encryptedInput, 'Invalid encrypted password')
+		setError(encryptedInput, t('invalidEncrypted'))
 		return
 	}
 	$('#pass').val(res)
@@ -129,20 +217,10 @@ $('input[type="text"],input[type="password"],textarea').on(
 	}
 )
 
-$(window).on('keydown', (e) => {
-	if (e.code === 'KeyS' && e.ctrlKey) {
-		e.preventDefault()
-		confirm('Save password?') && storePassword()
-	}
-})
-
+translatePage()
 loadFromQuery()
 loadPassword()
 
-if ($('#encrypted').val() && $('#mainPass').val()) {
+if (lastEncrypted && $('#mainPass').val()) {
 	$('#decrypt').click()
-	$('#pass').focus()
-	setTimeout(() => {
-		$('#pass').select()
-	}, 100)
 }

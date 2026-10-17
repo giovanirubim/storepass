@@ -61,9 +61,7 @@ const fixTypos = (str) => {
 }
 
 export const encrypt = async (pass, text) => {
-	const salt = 'x'
-		.repeat(6)
-		.replace(/x/g, () => ((Math.random() * 16) | 0).toString(16))
+	const salt = buffToHex(crypto.getRandomValues(new Uint8Array(3)))
 	const hexText = strToHex(text)
 	const hash = await encryptionHash(salt, pass, hexText.length)
 	const content = xorHexStr(hash, hexText)

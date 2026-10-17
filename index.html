@@ -1,5 +1,6 @@
-<html>
+<html lang="en">
 	<head>
+		<meta charset="utf-8" />
 		<link rel="stylesheet" href="./css/main.css" />
 		<script type="application/javascript" src="./js/qrcode.min.js"></script>
 		<script
@@ -16,40 +17,52 @@
 	<body>
 		<div class="main">
 			<div class="field pass">
-				<label for="mainPass">Main password:</label>
+				<label for="mainPass" data-i18n="mainPassLabel">Master password:</label>
 				<div class="content">
 					<input type="password" id="mainPass" />
-					<button>
+					<button class="toggle">
 						<img src="./img/eye-open.svg" class="hidden" />
 						<img src="./img/eye-closed.svg" />
+					</button>
+					<button id="saveMainPass" title="Save in this browser" data-i18n-title="saveInBrowser">
+						<img src="./img/save.svg" />
+						<img src="./img/check.svg" class="hidden" />
 					</button>
 				</div>
 			</div>
 			<div class="field pass">
-				<label for="pass">Password:</label>
+				<label for="pass" data-i18n="passLabel">Password:</label>
 				<div class="content">
-					<input type="text" id="pass" />
-					<button>
-						<img src="./img/eye-open.svg" />
-						<img src="./img/eye-closed.svg" class="hidden" />
+					<input type="password" id="pass" />
+					<button class="toggle">
+						<img src="./img/eye-open.svg" class="hidden" />
+						<img src="./img/eye-closed.svg" />
+					</button>
+					<button class="copy" data-target="#pass" title="Copy" data-i18n-title="copy">
+						<img src="./img/copy.svg" />
+						<img src="./img/check.svg" class="hidden" />
 					</button>
 				</div>
 			</div>
 			<div class="field">
-				<label for="Encrypted">Encrypted:</label>
+				<label for="encrypted" data-i18n="encryptedLabel">Code:</label>
 				<div class="content">
 					<textarea id="encrypted"></textarea>
 					<div id="qr" style="display: none"></div>
+					<button class="copy" data-target="#encrypted" title="Copy" data-i18n-title="copy">
+						<img src="./img/copy.svg" />
+						<img src="./img/check.svg" class="hidden" />
+					</button>
 				</div>
 			</div>
 			<div class="buttons">
 				<select id="option">
-					<option value="text">Text</option>
-					<option value="link">Link</option>
-					<option value="qr">QR Code</option>
+					<option value="text" data-i18n="text">Text</option>
+					<option value="link" data-i18n="link">Link</option>
+					<option value="qr" data-i18n="qrCode">QR Code</option>
 				</select>
-				<button id="encrypt">Encrypt</button>
-				<button id="decrypt">Decrypt</button>
+				<button id="encrypt" data-i18n="encrypt">Generate code</button>
+				<button id="decrypt" data-i18n="decrypt">Translate code</button>
 			</div>
 		</div>
 	</body>

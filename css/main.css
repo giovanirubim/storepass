@@ -12,7 +12,7 @@ textarea {
 	font-family: monospace;
 }
 .main {
-	width: 300px;
+	width: 310px;
 	padding: 26px;
 	border: 1px solid #333;
 	border-radius: 10px;
@@ -46,9 +46,14 @@ textarea {
 		cursor: pointer;
 	}
 }
-.pass button img {
+.pass button img,
+.copy img {
 	width: 18px;
 	height: 18px;
+}
+.field .content textarea ~ .copy {
+	align-self: flex-start;
+	padding-top: 3px;
 }
 textarea {
 	resize: none;
@@ -57,7 +62,7 @@ textarea {
 .buttons {
 	display: flex;
 	justify-content: flex-end;
-	gap: 10px;
+	gap: 5px;
 	select,
 	button {
 		height: 26px;
@@ -67,6 +72,16 @@ textarea {
 		border-radius: 5px;
 		padding: 0px 8px;
 		cursor: pointer;
+	}
+	select {
+		flex: none;
+	}
+	button {
+		flex: 0 1 auto;
+		min-width: 0;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 	button[disabled] {
 		opacity: 0.5;
