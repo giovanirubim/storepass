@@ -1,5 +1,6 @@
 import { decrypt, encrypt } from './encryption.js'
 import { t, translatePage } from './i18n.js'
+import { generatePassword } from './password.js'
 
 function buildURL(encrypted) {
 	const search = '?decrypt=' + encodeURIComponent(encrypted)
@@ -139,8 +140,16 @@ $('body').on('click', '.pass button.toggle', function () {
 	})
 })
 
-// Last encryption result, reused when switching the output type
+$('#generatePass').on('click', function () {
+	// Trigger input so errors and stale generated codes are cleared
+	$('#pass').val(generatePassword()).trigger('input')
+	$('#encrypt').click()
+})
+
+// Last code shown, reused when switching the output type
 let lastEncrypted = null
+// Whether lastEncrypted came from "Generate code" (and so from the inputs)
+let generated = false
 
 $('#encrypt').on('click', async function () {
 	const mainPassInput = $('#mainPass')
@@ -156,6 +165,7 @@ $('#encrypt').on('click', async function () {
 		return
 	}
 	lastEncrypted = await encrypt(mainPass, pass)
+	generated = true
 	renderOutput()
 })
 
@@ -164,6 +174,7 @@ function renderOutput() {
 	const encryptedInput = $('#encrypted')
 	const qr = $('#qr')
 	encryptedInput.siblings('.copy').toggle(option !== 'qr')
+	$('#decrypt').prop('disabled', option !== 'text')
 	if (option === 'text') {
 		encryptedInput.val(lastEncrypted ?? '').show().removeAttr('readonly')
 		qr.hide()
@@ -182,9 +193,18 @@ function renderOutput() {
 
 $('#option').on('input', renderOutput)
 
-// Typing a token by hand replaces the last encryption result
+// Typing a code by hand replaces the last code
 $('#encrypted').on('input', function () {
 	lastEncrypted = null
+	generated = false
+})
+
+// A generated code no longer matches once its inputs change
+$('#mainPass, #pass').on('input', function () {
+	if (!generated) return
+	lastEncrypted = null
+	generated = false
+	renderOutput()
 })
 
 $('#decrypt').on('click', async function () {
@@ -195,20 +215,26 @@ $('#decrypt').on('click', async function () {
 		return
 	}
 	const encryptedInput = $('#encrypted')
-	// Link and QR modes show a URL or an image, so use the code behind them
-	const encrypted =
-		$('#option').val() === 'text' ? encryptedInput.val() : lastEncrypted
+	const encrypted = encryptedInput.val().trim()
 	if (!encrypted) {
 		setError(encryptedInput, t('enterEncrypted'))
 		return
 	}
-	const res = await decrypt({ pass: mainPass, encrypted })
-	if (res === null) {
+	if (await translateCode(mainPass, encrypted)) {
+		// Keep the code so switching to link or QR shows it
+		lastEncrypted = encrypted
+		generated = false
+	} else {
 		setError(encryptedInput, t('invalidEncrypted'))
-		return
 	}
-	$('#pass').val(res)
 })
+
+async function translateCode(mainPass, encrypted) {
+	const res = await decrypt({ pass: mainPass, encrypted })
+	if (res === null) return false
+	$('#pass').val(res)
+	return true
+}
 
 $('input[type="text"],input[type="password"],textarea').on(
 	'input',
@@ -218,9 +244,10 @@ $('input[type="text"],input[type="password"],textarea').on(
 )
 
 translatePage()
+renderOutput()
 loadFromQuery()
 loadPassword()
 
 if (lastEncrypted && $('#mainPass').val()) {
-	$('#decrypt').click()
+	translateCode($('#mainPass').val(), lastEncrypted)
 }

@@ -4,6 +4,7 @@ body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	min-height: calc(100vh - 16px);
 }
 body,
 input,
@@ -48,6 +49,7 @@ textarea {
 }
 .pass button img,
 .copy img {
+	display: block;
 	width: 18px;
 	height: 18px;
 }
@@ -56,6 +58,7 @@ textarea {
 	padding-top: 3px;
 }
 textarea {
+	box-sizing: border-box;
 	resize: none;
 	height: 92px;
 }
