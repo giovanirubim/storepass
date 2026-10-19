@@ -174,7 +174,7 @@ function renderOutput() {
 	const encryptedInput = $('#encrypted')
 	const qr = $('#qr')
 	encryptedInput.siblings('.copy').toggle(option !== 'qr')
-	$('#decrypt').prop('disabled', option !== 'text')
+	$('#decrypt').prop('disabled', option === 'qr')
 	if (option === 'text') {
 		encryptedInput.val(lastEncrypted ?? '').show().removeAttr('readonly')
 		qr.hide()
@@ -215,7 +215,7 @@ $('#decrypt').on('click', async function () {
 		return
 	}
 	const encryptedInput = $('#encrypted')
-	const encrypted = encryptedInput.val().trim()
+	const encrypted = getCodeToTranslate()
 	if (!encrypted) {
 		setError(encryptedInput, t('enterEncrypted'))
 		return
@@ -228,6 +228,20 @@ $('#decrypt').on('click', async function () {
 		setError(encryptedInput, t('invalidEncrypted'))
 	}
 })
+
+function getCodeToTranslate() {
+	const option = $('#option').val()
+	const value = $('#encrypted').val().trim()
+	return option === 'link' ? codeFromLink(value) : value
+}
+
+function codeFromLink(link) {
+	try {
+		return new URL(link).searchParams.get('decrypt')
+	} catch {
+		return null
+	}
+}
 
 async function translateCode(mainPass, encrypted) {
 	const res = await decrypt({ pass: mainPass, encrypted })
