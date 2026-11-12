@@ -286,7 +286,7 @@ button.big {
 	width: 112px;
 	height: 112px;
 	border-radius: 10px;
-	background: #0d0f14; /* fixed, matches the curve's 'dark' background in signature.js */
+	background: #0d0f14; /* fixed, matches the curve's background (BG in password-curve.js) */
 	transition: opacity 0.2s;
 }
 

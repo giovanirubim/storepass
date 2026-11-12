@@ -10,13 +10,6 @@ import { PasswordCurve } from './password-curve.js'
 const SALT = 'storepass-v2-visual'
 const ITERATIONS = 300000 // fixed: the figure must be the same on every device
 
-// Fixed look, so the figure is the same on every device and in light/dark mode
-const LOOK = {
-	minLen: 1, // empty seed shows the neutral (gray circle) curve
-	bg: 'dark', // matches the .signature background in main.css
-	ext: 0.82, // leave room for the stroke in the small boxes
-}
-
 // Below this many characters the figure stays neutral (gray circle), like when empty
 export const MIN_LENGTH = 8
 
@@ -48,5 +41,5 @@ export async function computeSignature(pass) {
 // Creates the animated figure on a canvas. Show a seed with view.setPassword(seed),
 // or the neutral figure with view.setPassword('').
 export function createSignatureView(canvas, { thick }) {
-	return new PasswordCurve(canvas, { ...LOOK, thick })
+	return new PasswordCurve(canvas, { thick })
 }
