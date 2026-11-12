@@ -1,7 +1,7 @@
 import { decrypt, encrypt, formatCode, isValidCode } from './encryption.js'
 import { t, translatePage } from './i18n.js'
 import { generatePassword } from './password.js'
-import { computeSignature, createSignatureView } from './signature.js'
+import { computeSignature, createSignatureView, isTooShort } from './signature.js'
 import { renderPrintable } from './printable.js'
 import { canScan, startScan, stopScan } from './scanner.js'
 import { siteName, siteURL } from './config.js'
@@ -216,7 +216,9 @@ for (const button of $$('.copy')) {
 // --- 1. Start: master password + visual signature ---
 
 const signatureCache = new Map()
+// Resolves to '' (the neutral figure) for passwords that are too short
 function signatureFor(pass) {
+	if (isTooShort(pass)) return Promise.resolve('')
 	if (!signatureCache.has(pass)) signatureCache.set(pass, computeSignature(pass))
 	return signatureCache.get(pass)
 }
@@ -230,8 +232,8 @@ function renderSignature() {
 	const hint = $('#signatureHint')
 	clearTimeout(signatureTimer)
 	const run = ++signatureRun
-	if (!pass) {
-		signatureView.setPassword('') // neutral figure
+	if (isTooShort(pass)) {
+		signatureView.setPassword('') // neutral figure, same as empty
 		box.classList.remove('loading')
 		hint.textContent = t('signatureEmpty')
 		return

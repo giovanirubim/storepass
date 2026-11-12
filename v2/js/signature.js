@@ -17,6 +17,13 @@ const LOOK = {
 	ext: 0.82, // leave room for the stroke in the small boxes
 }
 
+// Below this many characters the figure stays neutral (gray circle), like when empty
+export const MIN_LENGTH = 8
+
+export function isTooShort(pass) {
+	return [...pass].length < MIN_LENGTH
+}
+
 const encoder = new TextEncoder()
 
 // Returns a 24-bit seed (6 hex chars) for the master password

@@ -14,7 +14,7 @@ const messages = {
 		signatureTitle: 'Your picture',
 		signatureHint:
 			'This picture comes from your master password. If it looks different from usual, check what you typed.',
-		signatureEmpty: 'Your picture will appear here as you type.',
+		signatureEmpty: 'Your picture will appear here after 8 characters.',
 		continue: 'Continue',
 		enterMasterPass: 'Type your master password',
 		masterPassTip:
@@ -105,7 +105,7 @@ const messages = {
 		signatureTitle: 'Sua figura',
 		signatureHint:
 			'Esta figura vem da sua senha mestre. Se ela estiver diferente do normal, confira o que você digitou.',
-		signatureEmpty: 'Sua figura aparece aqui enquanto você digita.',
+		signatureEmpty: 'Sua figura aparece aqui a partir de 8 caracteres.',
 		continue: 'Continuar',
 		enterMasterPass: 'Digite sua senha mestre',
 		masterPassTip:
