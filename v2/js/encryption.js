@@ -80,7 +80,10 @@ export async function decrypt(code, pass) {
 }
 
 // "21G26TGAP7..." -> "21G26-TGAP7-..."
+// v1 codes (salt.content.checksum) are returned as they are: grouping and
+// uppercasing would break their separators and typo fixes.
 export function formatCode(code) {
+	if (isV1(code)) return code.trim()
 	return normalizeBase32(code).match(/.{1,5}/g).join('-')
 }
 
