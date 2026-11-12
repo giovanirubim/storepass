@@ -353,6 +353,7 @@ let recovered = null
 function showResult(result) {
 	recovered = result.password
 	$('#resultPass').value = result.password
+	setVisibility($('#resultPass'), false) // starts hidden every time
 	$('#oldFormat').classList.toggle('hidden', result.version !== 1)
 	$('#code').value = ''
 	go('result')

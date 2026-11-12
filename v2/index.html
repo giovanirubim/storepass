@@ -129,7 +129,10 @@
 			<section class="screen" id="screen-result">
 				<h1 data-i18n="resultTitle">Your password:</h1>
 				<div class="input-row">
-					<input type="text" id="resultPass" class="mono big-text" readonly />
+					<input type="password" id="resultPass" class="mono big-text" readonly />
+					<button type="button" class="icon-button toggle-visibility" data-target="resultPass" data-i18n-title="show" data-i18n-label="show">
+						<img src="./img/eye-open.svg" alt="" />
+					</button>
 					<button type="button" class="icon-button copy" data-target="resultPass" data-i18n-title="copy" data-i18n-label="copy">
 						<img src="./img/copy.svg" alt="" />
 					</button>
