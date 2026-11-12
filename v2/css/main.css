@@ -286,19 +286,12 @@ button.big {
 	width: 112px;
 	height: 112px;
 	border-radius: 10px;
-	background: #f1f1ee; /* fixed, so the figure looks the same in dark mode */
+	background: #0d0f14; /* fixed, matches the curve's 'dark' background in signature.js */
 	transition: opacity 0.2s;
 }
 
 .signature.loading {
 	opacity: 0.35;
-}
-
-.signature svg,
-.signature-thumb svg {
-	display: block;
-	width: 100%;
-	height: 100%;
 }
 
 .signature-title {
@@ -310,12 +303,9 @@ button.big {
 	width: 32px;
 	height: 32px;
 	border-radius: 6px;
-	background: #f1f1ee;
+	background: #0d0f14;
 	flex: none;
-}
-
-.signature-thumb:empty {
-	display: none;
+	display: block;
 }
 
 #changeMasterPass {

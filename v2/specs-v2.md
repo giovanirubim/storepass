@@ -143,7 +143,9 @@ There is always a "Back" button and a way to change the master password.
 
 ## 8. Master password visual signature
 
-**Goal:** confirm the master password was typed correctly without asking for it twice. The user recognizes "their" figure (shapes, colors) and notices when it changes. A prototype already exists.
+**Goal:** confirm the master password was typed correctly without asking for it twice. The user recognizes "their" figure (an animated curve's shape and colors) and notices when it changes.
+
+**Implementation:** `js/password-curve.js` (copied from the password-viewer project) draws the curve. It is fed only the 24-bit PBKDF2 seed (`js/signature.js`), never the master password itself.
 
 **Requirements:**
 - Deterministic: the same master password always yields the same figure, on any device.

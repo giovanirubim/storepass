@@ -1,7 +1,7 @@
 import { decrypt, encrypt, formatCode, isValidCode } from './encryption.js'
 import { t, translatePage } from './i18n.js'
 import { generatePassword } from './password.js'
-import { computeSignature, signatureSVG } from './signature.js'
+import { computeSignature, createSignatureView } from './signature.js'
 import { renderPrintable } from './printable.js'
 import { canScan, startScan, stopScan } from './scanner.js'
 import { siteName, siteURL } from './config.js'
@@ -115,14 +115,22 @@ function focusLater(selector) {
 
 // --- Top bar: change master password, with its picture ---
 
+const signatureView = createSignatureView($('#signature'), { thick: 4 })
+const thumbView = createSignatureView($('#signatureThumb'), { thick: 1.5 })
+
 function updateTopbar() {
 	const showChange = !!masterPass && current !== 'start'
 	$('#changeMasterPass').classList.toggle('hidden', !showChange)
 	if (showChange) {
-		signatureFor(masterPass).then((cells) => {
-			if (masterPass) $('#signatureThumb').innerHTML = signatureSVG(cells)
+		thumbView.start()
+		signatureFor(masterPass).then((seed) => {
+			if (masterPass) thumbView.setPassword(seed)
 		})
+	} else {
+		thumbView.stop()
 	}
+	if (current === 'start') signatureView.start()
+	else signatureView.stop()
 }
 
 $('#changeMasterPass').addEventListener('click', () => {
@@ -223,16 +231,16 @@ function renderSignature() {
 	clearTimeout(signatureTimer)
 	const run = ++signatureRun
 	if (!pass) {
-		box.innerHTML = ''
+		signatureView.setPassword('') // neutral figure
 		box.classList.remove('loading')
 		hint.textContent = t('signatureEmpty')
 		return
 	}
 	box.classList.add('loading')
 	signatureTimer = setTimeout(async () => {
-		const cells = await signatureFor(pass)
+		const seed = await signatureFor(pass)
 		if (run !== signatureRun) return // typed again meanwhile
-		box.innerHTML = signatureSVG(cells)
+		signatureView.setPassword(seed)
 		box.classList.remove('loading')
 		hint.textContent = t('signatureHint')
 	}, 400)
