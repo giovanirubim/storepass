@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="referrer" content="no-referrer" />
+		<title>StorePass</title>
+		<link rel="icon" href="data:," />
+		<link rel="stylesheet" href="./css/main.css" />
+		<script type="module" src="./js/main.js"></script>
+	</head>
+	<body>
+		<header class="topbar">
+			<span class="brand">StorePass</span>
+			<button id="changeMasterPass" class="link-button hidden" type="button">
+				<span class="signature-thumb" id="signatureThumb"></span>
+				<span data-i18n="changeMasterPass">Change master password</span>
+			</button>
+		</header>
+
+		<main>
+			<!-- 1. Start: master password -->
+			<section class="screen" id="screen-start">
+				<h1 id="startTitle" data-i18n="startTitle">To get started, type your master password.</h1>
+				<form id="startForm" novalidate>
+					<div class="field">
+						<label for="masterPass" data-i18n="masterPassLabel">Master password</label>
+						<div class="input-row">
+							<input type="password" id="masterPass" autocomplete="off" autocapitalize="off" spellcheck="false" />
+							<button type="button" class="icon-button toggle-visibility" data-target="masterPass" data-i18n-title="show" data-i18n-label="show">
+								<img src="./img/eye-open.svg" alt="" />
+							</button>
+						</div>
+						<p class="error" role="alert"></p>
+					</div>
+					<div class="signature-box">
+						<div class="signature" id="signature" aria-live="polite"></div>
+						<div>
+							<p class="signature-title" data-i18n="signatureTitle">Your picture</p>
+							<p class="hint" id="signatureHint" data-i18n="signatureEmpty"></p>
+						</div>
+					</div>
+					<p class="hint" data-i18n="masterPassTip"></p>
+					<button type="submit" class="primary" data-i18n="continue">Continue</button>
+				</form>
+			</section>
+
+			<!-- 2. Menu -->
+			<section class="screen" id="screen-menu">
+				<h1 data-i18n="menuTitle">What do you want to do?</h1>
+				<div class="menu">
+					<button type="button" class="big" data-go="store" data-i18n="menuStore"></button>
+					<button type="button" class="big" data-go="create" data-i18n="menuCreate"></button>
+					<button type="button" class="big" data-go="recover" data-i18n="menuRecover"></button>
+				</div>
+			</section>
+
+			<!-- 3. Store an existing password -->
+			<section class="screen" id="screen-store">
+				<button type="button" class="back" data-back><img src="./img/back.svg" alt="" /><span data-i18n="back">Back</span></button>
+				<h1 data-i18n="storeTitle"></h1>
+				<form id="storeForm" novalidate>
+					<div class="field">
+						<label for="storePass" data-i18n="passwordLabel">Password</label>
+						<div class="input-row">
+							<input type="password" id="storePass" autocomplete="off" autocapitalize="off" spellcheck="false" />
+							<button type="button" class="icon-button toggle-visibility" data-target="storePass" data-i18n-title="show" data-i18n-label="show">
+								<img src="./img/eye-open.svg" alt="" />
+							</button>
+						</div>
+						<p class="error" role="alert"></p>
+					</div>
+					<button type="submit" class="primary" data-i18n="generateCode">Generate code</button>
+				</form>
+			</section>
+
+			<!-- 4. Create a new password -->
+			<section class="screen" id="screen-create">
+				<button type="button" class="back" data-back><img src="./img/back.svg" alt="" /><span data-i18n="back">Back</span></button>
+				<h1 data-i18n="createTitle"></h1>
+				<div class="field">
+					<div class="input-row">
+						<input type="text" id="newPass" class="mono big-text" readonly />
+						<button type="button" class="icon-button" id="rerollPass" data-i18n-title="reroll" data-i18n-label="reroll">
+							<img src="./img/dice.svg" alt="" />
+						</button>
+						<button type="button" class="icon-button copy" data-target="newPass" data-i18n-title="copy" data-i18n-label="copy">
+							<img src="./img/copy.svg" alt="" />
+						</button>
+					</div>
+				</div>
+				<p class="hint" data-i18n="createHint"></p>
+				<button type="button" class="primary" id="createGenerate" data-i18n="generateCode">Generate code</button>
+			</section>
+
+			<!-- Print: the code as an image -->
+			<section class="screen" id="screen-print">
+				<h1 data-i18n="printTitle"></h1>
+				<p class="hint" data-i18n="printHint"></p>
+				<img id="printImage" class="printable print-image" alt="" />
+				<div class="actions">
+					<a id="downloadImage" class="button" download="storepass.png"><img src="./img/download.svg" alt="" /><span data-i18n="downloadImage">Save image</span></a>
+					<button type="button" id="printButton"><img src="./img/printer.svg" alt="" /><span data-i18n="print">Print</span></button>
+				</div>
+				<button type="button" class="primary" data-go="menu" data-i18n="done">Done</button>
+			</section>
+
+			<!-- 5. Recover -->
+			<section class="screen" id="screen-recover">
+				<button type="button" class="back" data-back><img src="./img/back.svg" alt="" /><span data-i18n="back">Back</span></button>
+				<h1 data-i18n="recoverTitle"></h1>
+				<form id="recoverForm" novalidate>
+					<div class="field">
+						<label for="code" data-i18n="codeLabel">Code</label>
+						<textarea id="code" class="mono" rows="3" autocomplete="off" autocapitalize="characters" spellcheck="false"></textarea>
+						<p class="error" role="alert"></p>
+					</div>
+					<div class="scanner hidden" id="scanner">
+						<video id="scanVideo" playsinline muted></video>
+					</div>
+					<div class="actions">
+						<button type="button" id="scanButton" class="hidden"><img src="./img/camera.svg" alt="" /><span data-i18n="scan">Scan QR code</span></button>
+					</div>
+					<button type="submit" class="primary" data-i18n="open">Open</button>
+				</form>
+			</section>
+
+			<!-- Recover: result -->
+			<section class="screen" id="screen-result">
+				<h1 data-i18n="resultTitle">Your password:</h1>
+				<div class="input-row">
+					<input type="text" id="resultPass" class="mono big-text" readonly />
+					<button type="button" class="icon-button copy" data-target="resultPass" data-i18n-title="copy" data-i18n-label="copy">
+						<img src="./img/copy.svg" alt="" />
+					</button>
+				</div>
+				<div class="notice hidden" id="oldFormat">
+					<p data-i18n="oldFormat"></p>
+					<button type="button" id="newCodeButton" data-i18n="newCode">Generate new code</button>
+				</div>
+				<button type="button" class="primary" data-go="recover" data-i18n="recoverAnother">Recover another</button>
+				<button type="button" data-go="menu" data-i18n="done">Done</button>
+			</section>
+
+			<!-- Recovery sheet -->
+			<section class="screen" id="screen-sheet">
+				<button type="button" class="back" data-back><img src="./img/back.svg" alt="" /><span data-i18n="back">Back</span></button>
+				<p class="hint" data-i18n="sheetPrintHint"></p>
+				<button type="button" class="primary" id="printSheet"><img src="./img/printer.svg" alt="" /><span data-i18n="print">Print</span></button>
+				<article class="sheet printable">
+					<h1 data-i18n="sheetTitle"></h1>
+					<h2 data-i18n="sheetWhatTitle"></h2>
+					<p data-i18n="sheetWhat"></p>
+					<p><strong data-i18n="sheetSite">Site:</strong> <span class="mono" id="sheetSiteURL"></span></p>
+					<p data-i18n="sheetSiteHint"></p>
+					<h2 data-i18n="sheetNoSiteTitle"></h2>
+					<p data-i18n="sheetNoSite"></p>
+					<ol>
+						<li data-i18n="sheetStep1"></li>
+						<li data-i18n="sheetStep2"></li>
+						<li data-i18n="sheetStep3"></li>
+						<li data-i18n="sheetStep4"></li>
+						<li data-i18n="sheetStep5"></li>
+					</ol>
+<pre class="snippet" id="snippet">async function decrypt(code, pass) {
+  const A = '0123456789ABCDEFGHJKMNPQRSTVWXYZ'
+  const clean = code.toUpperCase().replace(/[\s-]/g, '').replace(/O/g, '0').replace(/[IL]/g, '1').slice(1)
+  const bits = [...clean].map(c =&gt; A.indexOf(c).toString(2).padStart(5, '0')).join('')
+  const b = new Uint8Array(bits.match(/.{8}/g).map(x =&gt; parseInt(x, 2)))
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey'])
+  const key = await crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt: b.slice(0, 8), iterations: 600000, hash: 'SHA-256' },
+    base, { name: 'AES-GCM', length: 128 }, false, ['decrypt'])
+  const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: new Uint8Array(12), tagLength: 32 }, key, b.slice(8))
+  return new TextDecoder().decode(pt)
+}
+
+decrypt('21G26-TGAP7-BQ5KC-7P6JD-3661G-GD55M-E8XH5-GQ83N-8PXX0', 'trustno1').then(console.log)</pre>
+					<p data-i18n="sheetQrHint"></p>
+					<h2 data-i18n="sheetTestTitle"></h2>
+					<p data-i18n="sheetTest"></p>
+					<table class="test-vector">
+						<tr><th data-i18n="sheetTestPass"></th><td class="mono">trustno1</td></tr>
+						<tr><th data-i18n="sheetTestCode"></th><td class="mono">21G26-TGAP7-BQ5KC-7P6JD-3661G-GD55M-E8XH5-GQ83N-8PXX0</td></tr>
+						<tr><th data-i18n="sheetTestResult"></th><td class="mono">pindamonhangaba</td></tr>
+					</table>
+				</article>
+			</section>
+		</main>
+
+		<footer>
+			<button type="button" class="link-button" data-go="sheet" data-i18n="recoverySheet">Recovery sheet</button>
+		</footer>
+	</body>
+</html>
