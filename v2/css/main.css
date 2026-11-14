@@ -167,6 +167,12 @@ textarea[aria-invalid='true'] {
 	border-color: var(--error);
 }
 
+.code-output {
+	resize: none;
+	overflow: hidden;
+	overflow-wrap: normal; /* wrap only at the hyphens, keeping groups whole */
+}
+
 .big-text {
 	font-size: 22px;
 	letter-spacing: 0.04em;

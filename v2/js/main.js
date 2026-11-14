@@ -294,6 +294,16 @@ $('#createGenerate').addEventListener('click', async (event) => {
 
 // --- Print screen ---
 
+// Grows a textarea to show all its text
+function fitHeight(textarea) {
+	textarea.style.height = 'auto'
+	textarea.style.height = textarea.scrollHeight + 'px'
+}
+
+window.addEventListener('resize', () => {
+	if (current === 'print') fitHeight($('#printCode'))
+})
+
 async function generateAndPrint(password, button) {
 	const code = await busy(button, () => encrypt(masterPass, password))
 	const canvas = renderPrintable({
@@ -304,9 +314,11 @@ async function generateAndPrint(password, button) {
 	const url = canvas.toDataURL('image/png')
 	$('#printImage').src = url
 	$('#printImage').alt = formatCode(code)
+	$('#printCode').value = formatCode(code)
 	$('#downloadImage').href = url
 	$('#downloadImage').download = `storepass-${code.slice(1, 6)}.png`
 	go('print')
+	fitHeight($('#printCode')) // after it is visible, so it can be measured
 }
 
 $('#printButton').addEventListener('click', () => window.print())

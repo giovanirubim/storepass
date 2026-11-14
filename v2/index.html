@@ -98,6 +98,15 @@
 				<h1 data-i18n="printTitle"></h1>
 				<p class="hint" data-i18n="printHint"></p>
 				<img id="printImage" class="printable print-image" alt="" />
+				<div class="field">
+					<label for="printCode" data-i18n="codeLabel">Code</label>
+					<div class="input-row">
+						<textarea id="printCode" class="mono big-text code-output" rows="1" readonly></textarea>
+						<button type="button" class="icon-button copy" data-target="printCode" data-i18n-title="copy" data-i18n-label="copy">
+							<img src="./img/copy.svg" alt="" />
+						</button>
+					</div>
+				</div>
 				<div class="actions">
 					<a id="downloadImage" class="button" download="storepass.png"><img src="./img/download.svg" alt="" /><span data-i18n="downloadImage">Save image</span></a>
 					<button type="button" id="printButton"><img src="./img/printer.svg" alt="" /><span data-i18n="print">Print</span></button>
