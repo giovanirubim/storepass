@@ -17,8 +17,6 @@ const messages = {
 		signatureEmpty: 'Your picture will appear here after 8 characters.',
 		continue: 'Continue',
 		enterMasterPass: 'Type your master password',
-		masterPassTip:
-			'Tip: a good master password is a few random words, like "lemon window cloud tiger".',
 
 		menuTitle: 'What do you want to do?',
 		menuStore: 'Store a password I already have',
@@ -108,8 +106,6 @@ const messages = {
 		signatureEmpty: 'Sua figura aparece aqui a partir de 8 caracteres.',
 		continue: 'Continuar',
 		enterMasterPass: 'Digite sua senha mestre',
-		masterPassTip:
-			'Dica: uma boa senha mestre é formada por algumas palavras aleatórias, como "limão janela nuvem tigre".',
 
 		menuTitle: 'O que você quer fazer?',
 		menuStore: 'Guardar uma senha que eu já tenho',
